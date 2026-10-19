@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Привычки</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter как веб-фоллбэк для SF Pro -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: [
+                            '-apple-system',
+                            'BlinkMacSystemFont',
+                            '"SF Pro Display"',
+                            '"SF Pro Text"',
+                            '"Inter"',
+                            '"Helvetica Neue"',
+                            'sans-serif'
+                        ]
+                    },
+                    colors: {
+                        ios: {
+                            bg: '#F2F2F7',
+                            card: '#FFFFFF',
+                            text: '#1C1C1E',
+                            sub: '#8E8E93',
+                            line: '#E5E5EA',
+                            blue: '#007AFF',
+                            green: '#34C759',
+                            orange: '#FF9500',
+                            purple: '#AF52DE',
+                            pink: '#FF2D55',
+                            darkBg: '#000000',
+                            darkCard: '#1C1C1E',
+                            darkElevated: '#2C2C2E',
+                            darkLine: '#38383A'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg-page: #F2F2F7;
+            --bg-card: #FFFFFF;
+            --bg-subtle: #F2F2F7;
+            --bg-hover: #F9F9FB;
+            --text-primary: #1C1C1E;
+            --text-secondary: #8E8E93;
+            --separator: #E5E5EA;
+            --card-border: rgba(0, 0, 0, 0.05);
+            --card-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+        }
+
+        html.dark {
+            --bg-page: #000000;
+            --bg-card: #1C1C1E;
+            --bg-subtle: #2C2C2E;
+            --bg-hover: #252528;
+            --text-primary: #FFFFFF;
+            --text-secondary: #8E8E93;
+            --separator: #38383A;
+            --card-border: rgba(255, 255, 255, 0.08);
+            --card-shadow: none;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
+            font-variant-numeric: tabular-nums;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        /* Карточка в стиле iOS Inset Grouped */
+        .ios-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--card-shadow);
+            border-radius: 16px;
+        }
+
+        .ios-separator {
+            border-color: var(--separator);
+        }
+
+        .ios-subtle {
+            background-color: var(--bg-subtle);
+        }
+
+        .ios-row-hover:hover {
+            background-color: var(--bg-hover);
+        }
+
+        /* Плавное нажатие для кнопок в стиле iOS */
+        .ios-press {
+            transition: transform 0.12s ease, opacity 0.12s ease, background-color 0.15s ease;
+        }
+        .ios-press:active {
+            transform: scale(0.97);
+        }
+
+        /* Анимация круглого чекбокса как в Apple Напоминаниях */
+        .check-circle {
+            transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.15s ease, border-color 0.15s ease;
+        }
+        .check-circle:active {
+            transform: scale(0.88);
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-16">
+
+    <!-- ЦЕНТРИРОВАННЫЙ КОНТЕЙНЕР (МАКСИМУМ 820PX, МНОГО ВОЗДУХА) -->
+    <div class="max-w-[820px] mx-auto px-4 sm:px-6 pt-8 sm:pt-10 space-y-6">
+
+        <!-- 1. МИНИМАЛИСТИЧНАЯ ШАПКА -->
+        <header class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <p id="headerDateLabel" class="text-[14px] font-medium text-[#8E8E93] mb-0.5">
+                    Понедельник, 19 октября
+                </p>
+                <h1 class="text-[32px] sm:text-[34px] font-bold tracking-tight leading-tight">
+                    Привычки
+                </h1>
+            </div>
+
+            <div class="flex items-center gap-2.5">
+                <!-- Переключатель темы -->
+                <button type="button" onclick="toggleTheme()" id="themeToggleBtn"
+                    aria-label="Переключить тему"
+                    class="ios-card ios-press w-10 h-10 rounded-full flex items-center justify-center text-[#8E8E93] hover:text-[var(--text-primary)]">
+                    <i data-lucide="moon" class="w-5 h-5" id="themeIcon"></i>
+                </button>
+
+                <!-- Кнопка добавления привычки -->
+                <button type="button" onclick="openHabitModal()"
+                    class="ios-press bg-[#007AFF] hover:opacity-95 text-white font-semibold text-[15px] px-4 py-2.5 rounded-full flex items-center gap-1.5">
+                    <i data-lucide="plus" class="w-4 h-4 stroke-[2.5]"></i>
+                    <span>Новая привычка</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- 2. ПОЛОСА ДНЕЙ НЕДЕЛИ (ПН – ВС) В СТИЛЕ APPLE КАЛЕНДАРЯ -->
+        <section class="ios-card p-2 sm:p-3">
+            <div id="weekDaysStrip" class="grid grid-cols-7 gap-1 sm:gap-2">
+                <!-- Заполняется через JS -->
+            </div>
+        </section>
+
+        <!-- 3. КАРТОЧКА СВОДКИ ДНЯ (ПРОСТО И ЧИТАБЕЛЬНО) -->
+        <section class="ios-card p-5 sm:p-6">
+            <div class="flex flex-wrap items-baseline justify-between gap-2 mb-3">
+                <div>
+                    <span id="summaryDayTitle" class="text-[14px] font-medium text-[#8E8E93] block mb-0.5">
+                        Сегодня
+                    </span>
+                    <h2 id="summaryProgressText" class="text-[22px] sm:text-[24px] font-bold tracking-tight">
+                        Выполнено 0 из 0
+                    </h2>
+                </div>
+
+                <!-- Плашка текущей общей серии -->
+                <div class="ios-subtle px-3.5 py-1.5 rounded-full flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-[#34C759]" id="overallStreakDot"></span>
+                    <span id="overallStreakText" class="text-[14px] font-semibold">
+                        Серия: 0 дн. подряд
+                    </span>
+                </div>
+            </div>
+
+            <!-- Чистый горизонтальный прогресс-бар без градиентов -->
+            <div class="w-full h-3 ios-subtle rounded-full overflow-hidden">
+                <div id="summaryProgressBar"
+                    class="h-full bg-[#007AFF] rounded-full transition-all duration-300"
+                    style="width: 0%">
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. СПИСОК ПРИВЫЧЕК НА ДЕНЬ (В СТИЛЕ APPLE НАПОМИНАНИЙ) -->
+        <section class="space-y-2.5">
+            <div class="flex items-center justify-between px-1">
+                <h2 class="text-[19px] font-bold tracking-tight">Цели на день</h2>
+                <button type="button" onclick="markAllSelectedDay()" id="markAllBtn"
+                    class="text-[14px] font-medium text-[#007AFF] hover:opacity-80 transition">
+                    Отметить все
+                </button>
+            </div>
+
+            <div id="dailyHabitsList" class="ios-card divide-y ios-separator overflow-hidden">
+                <!-- Заполняется через JS -->
+            </div>
+        </section>
+
+        <!-- 5. НЕДЕЛЯ И СЕРИИ (ТАБЛИЦА НЕДЕЛИ + ЧИСТЫЙ ГРАФИК ВЫПОЛНЕНИЯ) -->
+        <section class="space-y-6 pt-2">
+            
+            <!-- Карточка А: Таблица серий за неделю (Пн–Вс) -->
+            <div class="ios-card p-5 sm:p-6">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+                    <div>
+                        <h2 class="text-[19px] font-bold tracking-tight">Неделя и серии</h2>
+                        <p class="text-[14px] text-[#8E8E93] mt-0.5">
+                            Нажмите на любой кружок, чтобы отметить или снять выполнение
+                        </p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto -mx-2 px-2">
+                    <table class="w-full text-left border-collapse min-w-[540px]">
+                        <thead>
+                            <tr id="weeklyGridHeader" class="border-b ios-separator text-[13px] font-medium text-[#8E8E93]">
+                                <!-- Заполняется через JS -->
+                            </tr>
+                        </thead>
+                        <tbody id="weeklyGridBody" class="divide-y ios-separator">
+                            <!-- Заполняется через JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Карточка Б: Простой график выполнения за неделю -->
+            <div class="ios-card p-5 sm:p-6">
+                <div class="flex flex-wrap items-baseline justify-between gap-2 mb-6">
+                    <div>
+                        <h2 class="text-[19px] font-bold tracking-tight">График выполнения за неделю</h2>
+                        <p class="text-[14px] text-[#8E8E93] mt-0.5">
+                            Количество выполненных целей по дням недели
+                        </p>
+                    </div>
+                    <span id="weeklyAverageBadge" class="text-[14px] font-semibold text-[#8E8E93]">
+                        Среднее: 0%
+                    </span>
+                </div>
+
+                <!-- Столбчатый график (7 дней) -->
+                <div id="weeklyBarChart" class="grid grid-cols-7 gap-2 sm:gap-4 items-end h-44 pt-6">
+                    <!-- Заполняется через JS -->
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Небольшая нижняя ссылка для сброса демо-данных -->
+        <footer class="pt-4 pb-8 text-center">
+            <button type="button" onclick="openResetModal()"
+                class="text-[14px] text-[#8E8E93] hover:text-[var(--text-primary)] transition">
+                Восстановить исходный список привычек
+            </button>
+        </footer>
+
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО: ДОБАВИТЬ / ИЗМЕНИТЬ ПРИВЫЧКУ -->
+    <div id="habitModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/40 backdrop-blur-[2px]" onclick="closeHabitModal()">
+        <div class="ios-card max-w-md w-full p-6 space-y-5" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between">
+                <h3 id="modalTitle" class="text-[20px] font-bold tracking-tight">Новая привычка</h3>
+                <button type="button" onclick="closeHabitModal()"
+                    class="ios-subtle w-8 h-8 rounded-full flex items-center justify-center text-[#8E8E93] hover:text-[var(--text-primary)]">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <form id="habitForm" onsubmit="saveHabitForm(event)" class="space-y-4">
+                <input type="hidden" id="habitIdInput">
+
+                <div>
+                    <label for="habitTitleInput" class="block text-[14px] font-medium text-[#8E8E93] mb-1.5">
+                        Название привычки
+                    </label>
+                    <input type="text" id="habitTitleInput" required maxlength="50"
+                        placeholder="Например: Выпить 2 литра воды"
+                        class="w-full px-4 py-3 rounded-xl ios-subtle text-[16px] font-medium focus:outline-none focus:ring-2 focus:ring-[#007AFF]">
+                </div>
+
+                <div>
+                    <label for="habitNoteInput" class="block text-[14px] font-medium text-[#8E8E93] mb-1.5">
+                        Описание или норма (необязательно)
+                    </label>
+                    <input type="text" id="habitNoteInput" maxlength="40"
+                        placeholder="Например: 30 минут, утром, 10 страниц"
+                        class="w-full px-4 py-3 rounded-xl ios-subtle text-[16px] focus:outline-none focus:ring-2 focus:ring-[#007AFF]">
+                </div>
+
+                <div>
+                    <label class="block text-[14px] font-medium text-[#8E8E93] mb-2">
+                        Цвет отметки
+                    </label>
+                    <div id="colorPickerRow" class="flex items-center gap-3">
+                        <!-- Заполняется через JS -->
+                    </div>
+                </div>
+
+                <div class="pt-3 flex items-center justify-end gap-2.5">
+                    <button type="button" onclick="closeHabitModal()"
+                        class="ios-press ios-subtle px-5 py-2.5 rounded-full text-[15px] font-semibold">
+                        Отмена
+                    </button>
+                    <button type="submit"
+                        class="ios-press bg-[#007AFF] text-white px-6 py-2.5 rounded-full text-[15px] font-semibold">
+                        Сохранить
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО: ПОДТВЕРЖДЕНИЕ (УДАЛЕНИЕ / СБРОС) -->
+    <div id="confirmModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/40 backdrop-blur-[2px]" onclick="closeConfirmModal()">
+        <div class="ios-card max-w-sm w-full p-6 text-center space-y-4" onclick="event.stopPropagation()">
+            <h3 id="confirmModalTitle" class="text-[19px] font-bold tracking-tight">Удалить привычку?</h3>
+            <p id="confirmModalText" class="text-[15px] text-[#8E8E93] leading-relaxed"></p>
+            <div class="pt-2 grid grid-cols-2 gap-2.5">
+                <button type="button" onclick="closeConfirmModal()"
+                    class="ios-press ios-subtle py-2.5 rounded-full text-[15px] font-semibold">
+                    Отмена
+                </button>
+                <button type="button" id="confirmModalBtn"
+                    class="ios-press bg-[#FF2D55] text-white py-2.5 rounded-full text-[15px] font-semibold">
+                    Удалить
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =========================================================================
+        // КОНСТАНТЫ И ЦВЕТА APPLE HIG
+        // =========================================================================
+        const STORAGE_KEY = 'apple_clean_habits_v1';
+        const THEME_KEY = 'apple_clean_theme_v1';
+
+        const DAYS_SHORT = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+        const DAYS_FULL = [
+            'Понедельник', 'Вторник', 'Среда', 'Четверг',
+            'Пятница', 'Суббота', 'Воскресенье'
+        ];
+        const MONTHS_GENITIVE = [
+            'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+            'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
+        ];
+
+        const APPLE_COLORS = [
+            { id: 'green', name: 'Зелёный', hex: '#34C759' },
+            { id: 'blue', name: 'Синий', hex: '#007AFF' },
+            { id: 'orange', name: 'Оранжевый', hex: '#FF9500' },
+            { id: 'purple', name: 'Фиолетовый', hex: '#AF52DE' },
+            { id: 'pink', name: 'Розовый', hex: '#FF2D55' }
+        ];
+
+        function getTodayIndex() {
+            const d = new Date().getDay();
+            return d === 0 ? 6 : d - 1;
+        }
+
+        const todayIndex = getTodayIndex();
+
+        function getWeekDatesInfo() {
+            const now = new Date();
+            const currentDay = now.getDay() === 0 ? 6 : now.getDay() - 1;
+            const monday = new Date(now);
+            monday.setDate(now.getDate() - currentDay);
+
+            const days = [];
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(monday);
+                d.setDate(monday.getDate() + i);
+                days.push({
+                    dayNum: d.getDate(),
+                    monthName: MONTHS_GENITIVE[d.getMonth()]
+                });
+            }
+            return days;
+        }
+
+        const weekDates = getWeekDatesInfo();
+
+        let state = {
+            selectedDay: todayIndex,
+            selectedColor: '#34C759',
+            habits: []
+        };
+
+        // =========================================================================
+        // ПОНЯТНЫЕ ПРИВЫЧКИ ПО УМОЛЧАНИЮ
+        // =========================================================================
+        function getDefaultHabits() {
+            return [
+                {
+                    id: 'h1',
+                    title: 'Выпить 2 литра воды',
+                    note: 'Чистая вода в течение дня',
+                    color: '#007AFF',
+                    week: [true, true, true, true, true, false, false]
+                },
+                {
+                    id: 'h2',
+                    title: 'Утренняя зарядка и разминка',
+                    note: '15 минут после пробуждения',
+                    color: '#34C759',
+                    week: [true, true, true, true, true, true, false]
+                },
+                {
+                    id: 'h3',
+                    title: 'Чтение книги',
+                    note: '20–30 страниц вечером',
+                    color: '#FF9500',
+                    week: [true, true, false, true, true, true, false]
+                },
+                {
+                    id: 'h4',
+                    title: 'Прогулка на свежем воздухе',
+                    note: 'Минимум 8 000 шагов',
+                    color: '#34C759',
+                    week: [true, false, true, true, true, false, false]
+                },
+                {
+                    id: 'h5',
+                    title: 'Работа без отвлечений',
+                    note: '2 часа глубокого фокуса',
+                    color: '#AF52DE',
+                    week: [true, true, true, true, false, false, false]
+                },
+                {
+                    id: 'h6',
+                    title: 'Сон до 23:00 без телефона',
+                    note: 'Отложить экраны за 30 минут',
+                    color: '#FF2D55',
+                    week: [false, true, true, true, true, false, false]
+                }
+            ];
+        }
+
+        // =========================================================================
+        // ИНИЦИАЛИЗАЦИЯ И СОХРАНЕНИЕ
+        // =========================================================================
+        function init() {
+            loadTheme();
+            loadData();
+            renderColorPicker();
+            renderAll();
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem(THEME_KEY);
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+            updateThemeIcon();
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light');
+            updateThemeIcon();
+            renderAll();
+        }
+
+        function updateThemeIcon() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const btn = document.getElementById('themeToggleBtn');
+            if (!btn) return;
+            btn.innerHTML = isDark
+                ? '<i data-lucide="sun" class="w-5 h-5 text-[#FF9500]"></i>'
+                : '<i data-lucide="moon" class="w-5 h-5"></i>';
+            lucide.createIcons();
+        }
+
+        function loadData() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        state.habits = parsed;
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.error(e);
+            }
+            state.habits = getDefaultHabits();
+            saveData();
+        }
+
+        function saveData() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state.habits));
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // =========================================================================
+        // ПОДСЧЁТ СЕРИЙ (СТРИКОВ) И СКЛОНЕНИЕ СЛОВ
+        // =========================================================================
+        function calculateHabitStreak(weekArray, upToDay = state.selectedDay) {
+            // Считаем непрерывную серию выполненных дней в рамках недели вплоть до выбранного дня
+            let streak = 0;
+            let startIdx = upToDay;
+
+            // Если на выбранный день ещё не отмечено, проверяем серию до вчерашнего дня
+            if (!weekArray[startIdx] && startIdx > 0 && weekArray[startIdx - 1]) {
+                startIdx = startIdx - 1;
+            }
+
+            for (let i = startIdx; i >= 0; i--) {
+                if (weekArray[i]) {
+                    streak++;
+                } else {
+                    break;
+                }
+            }
+            return streak;
+        }
+
+        function calculateBestStreakInWeek(weekArray) {
+            let max = 0;
+            let current = 0;
+            for (let i = 0; i < 7; i++) {
+                if (weekArray[i]) {
+                    current++;
+                    if (current > max) max = current;
+                } else {
+                    current = 0;
+                }
+            }
+            return max;
+        }
+
+        function pluralizeDays(count) {
+            const mod10 = count % 10;
+            const mod100 = count % 100;
+            if (mod10 === 1 && mod100 !== 11) return `${count} день`;
+            if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return `${count} дня`;
+            return `${count} дней`;
+        }
+
+        // =========================================================================
+        // РЕНДЕР ВСЕГО ИНТЕРФЕЙСА
+        // =========================================================================
+        function renderAll() {
+            renderHeaderDate();
+            renderWeekStrip();
+            renderSummaryCard();
+            renderDailyList();
+            renderWeeklyGrid();
+            renderWeeklyChart();
+            lucide.createIcons();
+        }
+
+        // 1. Дата в шапке
+        function renderHeaderDate() {
+            const dIdx = state.selectedDay;
+            const info = weekDates[dIdx];
+            const prefix = dIdx === todayIndex ? 'Сегодня · ' : '';
+            document.getElementById('headerDateLabel').textContent =
+                `${prefix}${DAYS_FULL[dIdx]}, ${info.dayNum} ${info.monthName}`;
+        }
+
+        // 2. Полоса выбора дня недели (Пн – Вс)
+        function renderWeekStrip() {
+            const container = document.getElementById('weekDaysStrip');
+            const totalHabits = state.habits.length;
+
+            container.innerHTML = DAYS_SHORT.map((dayName, idx) => {
+                const isSelected = idx === state.selectedDay;
+                const isToday = idx === todayIndex;
+                const doneCount = state.habits.filter(h => h.week[idx]).length;
+                const allDone = totalHabits > 0 && doneCount === totalHabits;
+                const hasSome = doneCount > 0;
+
+                // Индикатор-точка под числом
+                let dotColor = 'bg-transparent';
+                if (allDone) {
+                    dotColor = isSelected ? 'bg-white' : 'bg-[#34C759]';
+                } else if (hasSome) {
+                    dotColor = isSelected ? 'bg-white/80' : 'bg-[#007AFF]';
+                }
+
+                return `
+                    <button type="button" onclick="selectDay(${idx})"
+                        class="ios-press py-2.5 px-1 rounded-xl flex flex-col items-center justify-center transition ${
+                            isSelected
+                                ? 'bg-[#007AFF] text-white shadow-sm'
+                                : 'hover:bg-[var(--bg-subtle)] text-[var(--text-primary)]'
+                        }">
+                        <span class="text-[13px] font-medium ${isSelected ? 'text-white/90' : 'text-[#8E8E93]'}">
+                            ${dayName}
+                        </span>
+                        <span class="text-[18px] font-bold mt-0.5 ${isToday && !isSelected ? 'text-[#007AFF]' : ''}">
+                            ${weekDates[idx].dayNum}
+                        </span>
+                        <span class="w-1.5 h-1.5 rounded-full mt-1.5 ${dotColor}"></span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function selectDay(idx) {
+            state.selectedDay = idx;
+            renderAll();
+        }
+
+        // 3. Карточка сводки выбранного дня
+        function renderSummaryCard() {
+            const dIdx = state.selectedDay;
+            const total = state.habits.length;
+            const done = state.habits.filter(h => h.week[dIdx]).length;
+            const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+            const dayTitleEl = document.getElementById('summaryDayTitle');
+            dayTitleEl.textContent = dIdx === todayIndex
+                ? 'Прогресс на сегодня'
+                : `${DAYS_FULL[dIdx]}, ${weekDates[dIdx].dayNum} ${weekDates[dIdx].monthName}`;
+
+            const progressTextEl = document.getElementById('summaryProgressText');
+            if (total === 0) {
+                progressTextEl.textContent = 'Нет добавленных привычек';
+            } else if (done === total) {
+                progressTextEl.textContent = `Все ${total} из ${total} выполнены`;
+            } else {
+                progressTextEl.textContent = `Выполнено ${done} из ${total}`;
+            }
+
+            const barEl = document.getElementById('summaryProgressBar');
+            barEl.style.width = `${pct}%`;
+            barEl.style.backgroundColor = (done === total && total > 0) ? '#34C759' : '#007AFF';
+
+            // Лучшая текущая серия среди привычек
+            let bestActiveStreak = 0;
+            state.habits.forEach(h => {
+                const s = calculateHabitStreak(h.week, dIdx);
+                if (s > bestActiveStreak) bestActiveStreak = s;
+            });
+
+            document.getElementById('overallStreakText').textContent =
+                `Лучшая серия: ${pluralizeDays(bestActiveStreak)}`;
+            document.getElementById('overallStreakDot').style.backgroundColor =
+                bestActiveStreak > 0 ? '#34C759' : '#8E8E93';
+        }
+
+        // 4. Ежедневный чек-лист (в стиле Apple Напоминаний)
+        function renderDailyList() {
+            const dIdx = state.selectedDay;
+            const listEl = document.getElementById('dailyHabitsList');
+            const markAllBtn = document.getElementById('markAllBtn');
+
+            if (state.habits.length === 0) {
+                markAllBtn.classList.add('hidden');
+                listEl.innerHTML = `
+                    <div class="p-10 text-center space-y-3">
+                        <p class="text-[17px] font-semibold">Список привычек пуст</p>
+                        <p class="text-[15px] text-[#8E8E93]">Добавьте первую цель, чтобы начать отслеживать регулярность.</p>
+                        <button type="button" onclick="openHabitModal()"
+                            class="ios-press mt-2 bg-[#007AFF] text-white font-semibold text-[15px] px-5 py-2.5 rounded-full inline-flex items-center gap-1.5">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span>Добавить привычку</span>
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            markAllBtn.classList.remove('hidden');
+            const allDone = state.habits.every(h => h.week[dIdx]);
+            markAllBtn.textContent = allDone ? 'Снять отметки дня' : 'Отметить все';
+
+            listEl.innerHTML = state.habits.map(habit => {
+                const isDone = habit.week[dIdx];
+                const streak = calculateHabitStreak(habit.week, dIdx);
+                const accent = habit.color || '#34C759';
+
+                return `
+                    <div class="ios-row-hover px-4 sm:px-5 py-3.5 min-h-[64px] flex items-center justify-between gap-3 transition group">
+                        
+                        <!-- Левая часть: Большой круглый чекбокс + Название и описание -->
+                        <div class="flex items-center gap-3.5 min-w-0 flex-1 cursor-pointer"
+                             onclick="toggleHabitDay('${habit.id}', ${dIdx})">
+                            
+                            <button type="button"
+                                aria-label="Отметить привычку"
+                                class="check-circle w-[26px] h-[26px] rounded-full flex items-center justify-center shrink-0 border-2"
+                                style="border-color: ${isDone ? accent : '#C7C7CC'}; background-color: ${isDone ? accent : 'transparent'};">
+                                ${isDone ? '<i data-lucide="check" class="w-4 h-4 text-white stroke-[3]"></i>' : ''}
+                            </button>
+
+                            <div class="min-w-0 flex-1">
+                                <div class="text-[17px] font-medium leading-snug break-words transition ${
+                                    isDone ? 'line-through text-[#8E8E93]' : 'text-[var(--text-primary)]'
+                                }">
+                                    ${escapeHtml(habit.title)}
+                                </div>
+                                ${habit.note ? `
+                                    <div class="text-[14px] text-[#8E8E93] mt-0.5 truncate">
+                                        ${escapeHtml(habit.note)}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+
+                        <!-- Правая часть: Бейдж серии + Кнопки редактирования и удаления -->
+                        <div class="flex items-center gap-2 shrink-0">
+                            ${streak > 0 ? `
+                                <span class="ios-subtle px-2.5 py-1 rounded-full text-[13px] font-semibold text-[var(--text-primary)]">
+                                    ${streak} дн. подряд
+                                </span>
+                            ` : `
+                                <span class="text-[13px] text-[#8E8E93] px-2">
+                                    0 дн.
+                                </span>
+                            `}
+
+                            <button type="button" onclick="openHabitModal('${habit.id}')"
+                                title="Изменить"
+                                class="w-8 h-8 rounded-full flex items-center justify-center text-[#8E8E93] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] transition">
+                                <i data-lucide="pencil" class="w-4 h-4"></i>
+                            </button>
+
+                            <button type="button" onclick="confirmDeleteHabit('${habit.id}')"
+                                title="Удалить"
+                                class="w-8 h-8 rounded-full flex items-center justify-center text-[#8E8E93] hover:text-[#FF2D55] hover:bg-[var(--bg-subtle)] transition">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 5. Таблица недели и серий (Пн–Вс)
+        function renderWeeklyGrid() {
+            const thead = document.getElementById('weeklyGridHeader');
+            const tbody = document.getElementById('weeklyGridBody');
+
+            thead.innerHTML = `
+                <th class="py-2.5 pr-4 font-medium text-[14px]">Привычка</th>
+                ${DAYS_SHORT.map((d, idx) => `
+                    <th class="py-2.5 px-1.5 text-center w-10 font-semibold ${
+                        idx === state.selectedDay ? 'text-[#007AFF]' : ''
+                    }">
+                        ${d}
+                    </th>
+                `).join('')}
+                <th class="py-2.5 pl-3 text-right font-medium text-[14px]">За неделю</th>
+            `;
+
+            if (state.habits.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" class="py-8 text-center text-[15px] text-[#8E8E93]">
+                            Нет привычек для отображения
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = state.habits.map(habit => {
+                const doneCount = habit.week.filter(Boolean).length;
+                const bestStreak = calculateBestStreakInWeek(habit.week);
+                const accent = habit.color || '#34C759';
+
+                return `
+                    <tr class="ios-row-hover transition">
+                        <td class="py-3.5 pr-4">
+                            <div class="font-medium text-[16px] text-[var(--text-primary)] truncate max-w-[210px] sm:max-w-[260px]">
+                                ${escapeHtml(habit.title)}
+                            </div>
+                            <div class="text-[13px] text-[#8E8E93]">
+                                Серия: ${pluralizeDays(bestStreak)}
+                            </div>
+                        </td>
+
+                        ${habit.week.map((done, dIdx) => `
+                            <td class="py-3 px-1 text-center">
+                                <button type="button"
+                                    onclick="toggleHabitDay('${habit.id}', ${dIdx})"
+                                    title="${escapeHtml(habit.title)} — ${DAYS_FULL[dIdx]}"
+                                    class="check-circle w-7 h-7 mx-auto rounded-full flex items-center justify-center transition ${
+                                        done ? '' : 'ios-subtle hover:opacity-80'
+                                    }"
+                                    style="${done ? `background-color: ${accent}; color: #FFFFFF;` : ''}">
+                                    ${done ? '<i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>' : ''}
+                                </button>
+                            </td>
+                        `).join('')}
+
+                        <td class="py-3.5 pl-3 text-right">
+                            <span class="text-[15px] font-semibold ${
+                                doneCount === 7 ? 'text-[#34C759]' : 'text-[var(--text-primary)]'
+                            }">
+                                ${doneCount} из 7
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // 6. График выполнения за неделю
+        function renderWeeklyChart() {
+            const chartEl = document.getElementById('weeklyBarChart');
+            const avgBadge = document.getElementById('weeklyAverageBadge');
+            const total = state.habits.length;
+
+            const daysStats = DAYS_SHORT.map((label, idx) => {
+                const done = state.habits.filter(h => h.week[idx]).length;
+                const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+                return { label, done, total, pct, idx };
+            });
+
+            const avgPct = total > 0
+                ? Math.round(daysStats.reduce((sum, d) => sum + d.pct, 0) / 7)
+                : 0;
+            avgBadge.textContent = `Среднее за неделю: ${avgPct}%`;
+
+            chartEl.innerHTML = daysStats.map(d => {
+                const isSelected = d.idx === state.selectedDay;
+                const isComplete = d.total > 0 && d.done === d.total;
+                const barColor = isComplete
+                    ? '#34C759'
+                    : d.done > 0
+                        ? '#007AFF'
+                        : 'transparent';
+
+                return `
+                    <div onclick="selectDay(${d.idx})"
+                         class="h-full flex flex-col items-center justify-end cursor-pointer group">
+                        
+                        <!-- Подпись над столбцом (например: 4/6) -->
+                        <span class="text-[13px] font-semibold mb-1.5 ${
+                            isSelected ? 'text-[#007AFF]' : 'text-[#8E8E93]'
+                        }">
+                            ${d.done}/${d.total}
+                        </span>
+
+                        <!-- Трек столбца -->
+                        <div class="w-full max-w-[44px] h-28 ios-subtle rounded-xl p-1 flex items-end overflow-hidden ${
+                            isSelected ? 'ring-2 ring-[#007AFF]/40' : ''
+                        }">
+                            <div class="w-full rounded-lg transition-all duration-300"
+                                 style="height: ${d.done > 0 ? Math.max(12, d.pct) : 0}%; background-color: ${barColor};">
+                            </div>
+                        </div>
+
+                        <!-- День недели внизу -->
+                        <span class="mt-2 text-[14px] font-semibold ${
+                            isSelected ? 'text-[#007AFF]' : 'text-[var(--text-primary)]'
+                        }">
+                            ${d.label}
+                        </span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // =========================================================================
+        // ДЕЙСТВИЯ ПОЛЬЗОВАТЕЛЯ
+        // =========================================================================
+        function toggleHabitDay(habitId, dayIdx) {
+            const habit = state.habits.find(h => h.id === habitId);
+            if (!habit) return;
+            habit.week[dayIdx] = !habit.week[dayIdx];
+            saveData();
+            renderAll();
+        }
+
+        function markAllSelectedDay() {
+            const dIdx = state.selectedDay;
+            if (state.habits.length === 0) return;
+
+            const allDone = state.habits.every(h => h.week[dIdx]);
+            state.habits.forEach(h => {
+                h.week[dIdx] = !allDone;
+            });
+
+            saveData();
+            renderAll();
+        }
+
+        // =========================================================================
+        // МОДАЛЬНОЕ ОКНО СОЗДАНИЯ / РЕДАКТИРОВАНИЯ
+        // =========================================================================
+        function renderColorPicker() {
+            const row = document.getElementById('colorPickerRow');
+            row.innerHTML = APPLE_COLORS.map(c => {
+                const isSelected = c.hex === state.selectedColor;
+                return `
+                    <button type="button"
+                        onclick="selectHabitColor('${c.hex}')"
+                        title="${c.name}"
+                        class="w-9 h-9 rounded-full flex items-center justify-center transition transform ${
+                            isSelected ? 'scale-110 ring-2 ring-offset-2 ring-[#007AFF]' : 'opacity-80 hover:opacity-100'
+                        }"
+                        style="background-color: ${c.hex};">
+                        ${isSelected ? '<i data-lucide="check" class="w-4 h-4 text-white stroke-[3]"></i>' : ''}
+                    </button>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        function selectHabitColor(hex) {
+            state.selectedColor = hex;
+            renderColorPicker();
+        }
+
+        function openHabitModal(habitId = null) {
+            const modal = document.getElementById('habitModal');
+            const idInput = document.getElementById('habitIdInput');
+            const titleInput = document.getElementById('habitTitleInput');
+            const noteInput = document.getElementById('habitNoteInput');
+            const modalTitle = document.getElementById('modalTitle');
+
+            if (habitId) {
+                const habit = state.habits.find(h => h.id === habitId);
+                if (!habit) return;
+                modalTitle.textContent = 'Изменить привычку';
+                idInput.value = habit.id;
+                titleInput.value = habit.title;
+                noteInput.value = habit.note || '';
+                state.selectedColor = habit.color || '#34C759';
+            } else {
+                modalTitle.textContent = 'Новая привычка';
+                idInput.value = '';
+                titleInput.value = '';
+                noteInput.value = '';
+                state.selectedColor = '#34C759';
+            }
+
+            renderColorPicker();
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => titleInput.focus(), 50);
+        }
+
+        function closeHabitModal() {
+            const modal = document.getElementById('habitModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function saveHabitForm(e) {
+            e.preventDefault();
+            const id = document.getElementById('habitIdInput').value;
+            const title = document.getElementById('habitTitleInput').value.trim();
+            const note = document.getElementById('habitNoteInput').value.trim();
+
+            if (!title) return;
+
+            if (id) {
+                const habit = state.habits.find(h => h.id === id);
+                if (habit) {
+                    habit.title = title;
+                    habit.note = note;
+                    habit.color = state.selectedColor;
+                }
+            } else {
+                state.habits.push({
+                    id: 'h_' + Date.now(),
+                    title,
+                    note,
+                    color: state.selectedColor,
+                    week: [false, false, false, false, false, false, false]
+                });
+            }
+
+            saveData();
+            closeHabitModal();
+            renderAll();
+        }
+
+        // =========================================================================
+        // УДАЛЕНИЕ И СБРОС СПИСКА
+        // =========================================================================
+        function confirmDeleteHabit(habitId) {
+            const habit = state.habits.find(h => h.id === habitId);
+            if (!habit) return;
+
+            const modal = document.getElementById('confirmModal');
+            document.getElementById('confirmModalTitle').textContent = 'Удалить привычку?';
+            document.getElementById('confirmModalText').textContent =
+                `Привычка «${habit.title}» будет удалена из вашего списка.`;
+
+            const btn = document.getElementById('confirmModalBtn');
+            btn.textContent = 'Удалить';
+            btn.className = 'ios-press bg-[#FF2D55] text-white py-2.5 rounded-full text-[15px] font-semibold';
+            btn.onclick = () => {
+                state.habits = state.habits.filter(h => h.id !== habitId);
+                saveData();
+                closeConfirmModal();
+                renderAll();
+            };
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function openResetModal() {
+            const modal = document.getElementById('confirmModal');
+            document.getElementById('confirmModalTitle').textContent = 'Восстановить список?';
+            document.getElementById('confirmModalText').textContent =
+                'Текущие привычки будут заменены исходным набором из 6 базовых привычек.';
+
+            const btn = document.getElementById('confirmModalBtn');
+            btn.textContent = 'Восстановить';
+            btn.className = 'ios-press bg-[#007AFF] text-white py-2.5 rounded-full text-[15px] font-semibold';
+            btn.onclick = () => {
+                state.habits = getDefaultHabits();
+                saveData();
+                closeConfirmModal();
+                renderAll();
+            };
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeConfirmModal() {
+            const modal = document.getElementById('confirmModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, m => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+            })[m]);
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
